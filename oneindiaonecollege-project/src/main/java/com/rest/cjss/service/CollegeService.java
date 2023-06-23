@@ -114,7 +114,7 @@ public class CollegeService {
         }
         throw new CourseNotFoundException("No Course available with the given Course Id, please provide the existing Course id");
     }
-
+//----------------------------------------------------------------------------------------------------------
     public List<CourseModel> getCoursesByStreamAndSubject(String stream,String subName)throws CourseNotFoundException{
         List<CourseEntity> entities= courseRepository.findByStreamAndSubjectsSubjectName(stream,subName).get();
         if(entities.size()>0){
@@ -136,6 +136,39 @@ public class CollegeService {
             return courseModels;
         }
         else throw new CourseNotFoundException("No course available on the provide subject "+subName+" in stream :"+stream);
+    }
+
+    public List<CourseModel> getCoursesByStreamAndSubjectAndFacultyId(String stream,String subName,int facId)throws CourseNotFoundException{
+
+            List<CourseModel> courseModels = new ArrayList<>();
+            courseRepository.findAll()
+                    .stream()
+                    .forEach(course -> {
+                        course.getSubjects()
+                                .stream().forEach(subject -> {
+                                 if(subject.getSubjectName().equalsIgnoreCase(subName)&&
+                                            subject.getStream().equalsIgnoreCase(stream)){
+                                     subject.getFacultyEntities().forEach(fac->{
+                                         if(fac.getFacultyId()==facId){
+                                             CourseModel model = new CourseModel();
+                                             model.setSubjects(new ArrayList<>());
+
+                                             model.setCourseId(course.getCourseId());
+                                             model.setStream(course.getStream());
+                                             model.setCourseName(course.getCourseName());
+                                             model.getSubjects().add(subject.getSubjectName());
+                                             courseModels.add(model);
+                                         }
+                                     });
+                                 }
+                                });
+                    });
+
+            if(courseModels.size()>0)
+                    return courseModels;
+            else
+                throw new CourseNotFoundException("Sorry... No such Course is available with provided details");
+
     }
 
  //--------------------------------------------------------------------------------------------------------
@@ -175,6 +208,9 @@ public class CollegeService {
         }
         else throw new StudentNotAvailableException("No Student present with the given details..!");
     }
+
+ //-------------------------------------------------------------------------------------------------------
+
 //--------------------------------------------------------------------------------------------------------
     public FacultyModel getCoursesByFacultyId(int id){
         Optional<FacultyEntity> optionalFaculty = facultyRepository.findById(id);
@@ -197,7 +233,9 @@ public class CollegeService {
             if(courseEntities.size()>0) {
                 courseEntities.stream()
                         .forEach(course -> {
-                            facultyModel.getCourses().add(course.getCourseName());
+                            if(!facultyModel.getCourses().contains(course.getCourseName())){
+                                facultyModel.getCourses().add(course.getCourseName());
+                            }
                         });
             }else{
                 facultyModel.getCourses().add("Not registered in anu course");

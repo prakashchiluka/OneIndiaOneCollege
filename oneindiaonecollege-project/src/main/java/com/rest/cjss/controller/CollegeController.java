@@ -84,4 +84,10 @@ public class CollegeController {
         FacultyModel facultyModel = service.getCoursesByFacultyId(id);
         return ResponseEntity.status(HttpStatus.OK).body(facultyModel);
     }
+
+    @GetMapping("/getCoursesByStreamAndSubjectAndFacultyId/{stream}/{subName}/{facId}")
+    public ResponseEntity<List<CourseModel>> getCoursesByStreamAndSubjectAndFacultyId(@PathVariable String stream,@PathVariable String subName,@PathVariable int facId){
+      List<CourseModel> courseModels= service.getCoursesByStreamAndSubjectAndFacultyId(stream,subName,facId);
+      return ResponseEntity.status(HttpStatus.OK).body(courseModels);
+    }
 }

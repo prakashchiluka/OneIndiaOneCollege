@@ -28,6 +28,7 @@ public class CollegeExceptionHandler {
     }
 
     @ExceptionHandler(SubjectNotFoundException.class)
+
     public ResponseEntity<String> subjectNotFoundException(SubjectNotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
