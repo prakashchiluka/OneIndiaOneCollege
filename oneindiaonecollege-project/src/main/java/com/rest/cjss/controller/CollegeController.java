@@ -4,11 +4,18 @@ import com.rest.cjss.entity.CourseEntity;
 import com.rest.cjss.entity.FacultyEntity;
 import com.rest.cjss.entity.StudentEntity;
 import com.rest.cjss.entity.SubjectEntity;
+import com.rest.cjss.exception.StudentNotAvailableException;
+import com.rest.cjss.model.CourseModel;
+import com.rest.cjss.model.FacultyModel;
+import com.rest.cjss.model.StudentModel;
 import com.rest.cjss.service.CollegeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class CollegeController {
@@ -17,53 +24,64 @@ public class CollegeController {
     private CollegeService service;
 
     @PostMapping("/add-subject")
-    public SubjectEntity addSubject(@RequestBody SubjectEntity subject){
-        return service.addSubject(subject);
+    public ResponseEntity<String> addSubject(@RequestBody SubjectEntity subject){
+        service.addSubject(subject);
+        return ResponseEntity.status(HttpStatus.OK).body("Subject added successfully");
     }
 
     @PostMapping("/add-faculty")
-    public FacultyEntity addFaculty(@RequestBody FacultyEntity faculty){
-        return service.addFaculty(faculty);
+    public ResponseEntity<String> addFaculty(@RequestBody FacultyEntity faculty){
+         service.addFaculty(faculty);
+         return ResponseEntity.status(HttpStatus.OK).body("Faculty successfully registered ");
     }
 
     @PutMapping("/assign-subject-to-faculty/{subId}/{facId}")
-    public SubjectEntity assignSubjectToFaculty(@PathVariable(value = "subId") int subId,@PathVariable(value = "facId") int facId){
-        return service.assignSubjectToFaculty(subId, facId);
+    public ResponseEntity<String> assignSubjectToFaculty(@PathVariable(value = "subId") int subId, @PathVariable(value = "facId") int facId){
+        service.assignSubjectToFaculty(subId, facId);
+        return ResponseEntity.status(HttpStatus.OK).body("Faculty is registered to Subject");
     }
 
     @PostMapping("/addCourse")
-    public CourseEntity addCourse(@RequestBody CourseEntity course){
-        return service.addCourse(course);
+    public ResponseEntity<String> addCourse(@RequestBody CourseEntity course){
+         service.addCourse(course);
+         return ResponseEntity.status(HttpStatus.OK).body("Course successfully registered ");
     }
 
     @PutMapping("/addSubjectToCourse/{subId}/{cId}")
-    public CourseEntity addSubjectToCourse(@PathVariable int subId,@PathVariable int cId){
-        return service.addSubjectToCourse(subId,cId);
+    public ResponseEntity<String> addSubjectToCourse(@PathVariable int subId, @PathVariable int cId){
+        service.addSubjectToCourse(subId,cId);
+        return ResponseEntity.status(HttpStatus.OK).body("Subject Successfully added to the given Course");
     }
 
     @PostMapping("/addStudent")
-    public StudentEntity addStudent(@RequestBody StudentEntity student){
-        return service.addStudent(student);
+    public ResponseEntity<String> addStudent(@RequestBody StudentEntity student){
+        service.addStudent(student);
+        return  ResponseEntity.status(HttpStatus.OK).body("Student successfully registered ");
     }
 
     @PutMapping("/addCourseToStudent/{cId}/{sId}")
-    public CourseEntity addCourseToStudent(@PathVariable int cId,@PathVariable int sId){
-        return service.addCourseToStudent(cId,sId);
+    public ResponseEntity<String> addCourseToStudent(@PathVariable int cId, @PathVariable int sId){
+        service.addCourseToStudent(cId,sId);
+        return  ResponseEntity.status(HttpStatus.OK).body("Student successfully registered in the Course");
+
     }
 
 
     @GetMapping("/getCoursesByStreamAndSubject/{stream}/{subName}")
-    public List<CourseEntity> getCoursesByStreamAndSubject(@PathVariable String stream,@PathVariable String subName){
-        return service.getCoursesByStreamAndSubject(stream,subName);
+    public ResponseEntity<List<CourseModel>> getCoursesByStreamAndSubject(@PathVariable String stream, @PathVariable String subName){
+       List<CourseModel> courseModels = service.getCoursesByStreamAndSubject(stream,subName);
+       return ResponseEntity.status(HttpStatus.OK).body(courseModels);
     }
 
     @GetMapping("/getStudentsByCourseSubName/{subName}")
-    public List<StudentEntity>  getStudentsByCourseSubName(@PathVariable String subName){
-        return service.getStudentsByCourseSubName(subName);
+    public ResponseEntity<List<StudentModel>>  getStudentsByCourseSubName(@PathVariable String subName){
+        List<StudentModel> students=service.getStudentsByCourseSubName(subName);
+            return ResponseEntity.status(HttpStatus.OK).body(students);
     }
 
     @GetMapping("/getCoursesByFacultyId/{id}")
-    public List<CourseEntity> getCoursesByFacultyId(@PathVariable int id){
-        return service.getCoursesByFacultyId(id);
+    public ResponseEntity<FacultyModel> getCoursesByFacultyId(@PathVariable int id){
+        FacultyModel facultyModel = service.getCoursesByFacultyId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(facultyModel);
     }
 }
